@@ -10,6 +10,45 @@ typedef struct QUEUE {
   process *proc;
 } queue;
 
+class queue{
+ public:
+  queue();
+  queue *pop( process **);
+  void peak(process **);
+  queue* enqueue(queue, process);
+  queue* sortedInsert(queue *, process *);
+  void processEX(float *, float *);
+  int get_min();
+  int get_max();
+  queue *cloneQueue();
+  ~queue();
+
+  queueNode *get_front();
+  void set_front(queueNode*);
+
+ private:
+  queueNode *front;
+};
+
+typedef queueNode *queuePtr;
+
+class queueNode{
+
+  friend queue;
+ public:
+  queueNode(process *);
+  queue *get_next();
+  void set_next(queue *);
+  process *get_proc();
+  void set_proc(process *);
+  ~queueNode();
+  
+ private:
+  queue *next;
+  process *proc;
+};
+
+
 // Pops the next element off of the queue
 // This returns a pointer to the next head element,
 // and stores a pointer to the process in the given

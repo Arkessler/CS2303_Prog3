@@ -2,6 +2,9 @@
 #include <math.h>
 #include "queue.h"
 #include "util.h"
+///////
+///////DON'T FORGET TO COME BACK WHEN PROCESSES HAVE BEEN FIXED
+
 
 // Forward declaration of createQueueElement
 queue* createQueueElement(process *proc);
@@ -12,57 +15,87 @@ queue* createQueueElement(process *proc);
 // out location. This frees the given queue element,
 // so do not attempt to use it again. To just get the
 // process element, use the peak method
-queue* pop(queue *head, process **out) {
-  queue* next = head->next;
-  peak(head, out);
-  free(head);
+
+//queue functions.
+
+queueNode::queueNode(process *newProcess){
+  set_next(NULL);
+  set_proc(newProcess);
+};
+
+queueNode *queueNode::get_next(){
   return next;
+}
+
+process *queueNode:;get_proc(){
+  return proc;
+}
+
+void queueNode::set_next(queueNode *newNext){
+  next = newNext;
+}
+
+void queueNode::set_proc(process *newProc){
+  proc = newProc;
+}
+
+queueNode::~queueNode(){
+  delete proc;
+  delete next;
+}
+
+
+
+void queue::pop(process **out) {
+  next = get_front()->next;
+  peak(out);
+  ~queue();
 }
 
 // Peaks at the next element of the queue, and stores
 // a pointer to the element at the given location.
-void peak(queue *head, process **out) {
-  if (head) *out = head->proc;
+void queue::peak(process **out) {
+  if (get_front()) *out = get_proc();
 }
 
 // Enqueues an element in a given list, mallocing a new
 // queue structure for the element. If null is passed 
 // in for head, a new queue will be created
-queue* enqueue(queue *head, process *proc) {
-  if (head == NULL) {
-    return createQueueElement(proc);
+queue* queue::enqueue(process *proc) {
+  if (front == NULL) {
+    return new queue(proc);
   } else {
-    head->next = enqueue(head->next, proc);
-    return head;
+    (front->next)->enqueue(proc);
+    return front;
   }
 }
 
 // Inserts the given proces into the queue, sorted by
 // cpu time. Returns a pointer to the new head of the queue
-queue* sortedInsert(queue *head, process *proc) {
-  if (head == NULL) {
+queue* queue::sortedInsert(process *proc) {
+  if (front == NULL) {
     // Empty case, return a new element
-    return createQueueElement(proc);
-  } else if (procLessThan(proc, head->proc)) {
+    return new queue(proc);
+  } else if (procLessThan(proc, front->proc)) {
     // New process arrives before, insert before
-    queue *new = createQueueElement(proc);
-    new->next = head;
-    return new;
+    queue *newQ = new queue(proc);
+    newQ->next = front;
+    return newQ;
   } else {
     // New process arrives after, insert after
-    head->next = sortedInsert(head->next, proc);
-    return head;
+    front->next->sortedInsert(proc);
+    return front;
   }
 }
 
 // Gets the average wait times of all the processes in the list
-float getQueueAverage(queue *head){
+float queue::getQueueAverage(){
   queue *cur;
   int total = 0, count = 0;
 
   // Loop until we reach the tail of the list
-  for (cur = head; cur; cur = cur->next) {
-    total += cur->proc->waitTime;
+  for (cur = front; cur; cur = cur->get_next()) {
+    total += (cur->get_proc())->waitTime;
     count++;
   }
 
@@ -71,15 +104,15 @@ float getQueueAverage(queue *head){
 
 // Calculates the variance of the queue, given the average wait time
 // The formula for variance is sum((waitTime_i - mean)^2)/n
-float getQueueVariance(queue* head, float avg) {
+float queue::getQueueVariance(float avg) {
   // Accumulators for the total and count
   float total = 0;
   int count = 0;
-  queue *cur;
+  queueNode *cur;
 
   // Loop until we reach the tail of the list
-  for (cur = head; cur; cur = cur->next) {
-    float diff = getDifference(head->proc, avg);
+  for (cur = front; cur; cur = cur->getNext()) {
+    float diff = (front->get_proc())->getDifference(avg);
     total += pow(diff, 2);
     count++;
   }
@@ -87,17 +120,18 @@ float getQueueVariance(queue* head, float avg) {
   return total/count;
 }
 
+
 // Calculates the average and variance of all given processes. The forumla
 // for response time is finish time - arrival time. The formula
 // for variance is EX^2 - (EX)^2, where X is the average response
 // time 
-void processEX(queue *head, float *avg, float *var) {
+void queue::processEX(float *avg, float *var) {
   float x, x2;
   int count;
   queue *cur;
 
-  for (cur = head; cur; cur = cur->next) {
-    int repTime = cur->proc->waitTime + cur->proc->cpuTime;
+  for (cur = front; cur; cur = cur->get_next()) {
+    int repTime = (cur->get_proc())->get_waitTime() + cur->get_proc()->get_cpuTime();
     x += repTime;
     x2 += pow(repTime, 2);
     count++;
@@ -108,44 +142,45 @@ void processEX(queue *head, float *avg, float *var) {
 }
 
 // Gets the minimum wait time of the queue
-int getQueueMin(queue *head) {
+int queue::getQueueMin(*head) {
   // If head is null, just return 0
-  if (!head) {
+  if (!front) {
     return 0;
   }
   
-  int min = head->proc->waitTime + head->proc->cpuTime;
+  int min = head->proc->get_waitTime() + head->proc->get_cpuTime();
   queue *cur;
 
-  for (cur = head; cur; cur = cur->next) {
-    min = min < cur->proc->waitTime + cur->proc->cpuTime ? min : cur->proc->waitTime + cur->proc->cpuTime;
+  for (cur = front; cur; cur = cur->next) {
+    min = min < cur->proc->get_waitTime() + cur->proc->get_cpuTime() ? min : cur->proc->get_waitTime() + cur->proc->get->cpuTime;
   }
 
   return min;
 }
 
 // Gets the maximum wait time of the queue
-int getQueueMax(queue *head) {
+int queue::getQueueMax() {
   // If head is null, just return 0
-  if (!head) {
+  if (!front) {
     return 0;
   }
   
-  int max = head->proc->waitTime + head->proc->cpuTime;
+  int max = (front->get_proc())->get_waitTime() + (front->get_proc())->get_cpuTime();
   queue *cur;
 
-  for (cur = head; cur; cur = cur->next) {
-    max = max > cur->proc->waitTime + cur->proc->cpuTime ? max : cur->proc->waitTime + cur->proc->cpuTime;
+  for (cur = front; cur; cur = cur->get_next()) {
+    max = max > (cur->get_proc())->get_waitTime() + (cur->get_proc())->get_cpuTime() ? max : (cur->get_proc())->get_waitTime() + (cur->get_proc()->get_cpuTime());
   }
 
   return max;
 }
 
 // Clones the given queue, and the process elements within.
-// These are malloced, be sure to free them later
-queue* cloneQueue(queue *head) {
-  if (head) {
-    queue* new = createQueueElement(cloneProc(head->proc));
+/////////THIS IS A PROBLEM SITUATION. These are malloced, be sure to free them later
+queue* queue::cloneQueue() {
+  if (front) {
+    queue* newQ = new queueNode(cloneProc(head->get_proc()));
+    //////////have to some time check 
     new->next = cloneQueue(head->next);
     return new;
   } else {
@@ -154,19 +189,12 @@ queue* cloneQueue(queue *head) {
 }
 
 // Frees the entire queue, and the process elements contained within
-void freeQueue(queue* head) {
-  if (head) {
-    freeQueue(head->next);
+void queue::~queue() {
+  if (front) {
+    
+    //////need to use a while for this part.
+    ~queue(head->next);
     if (head->proc) free(head->proc);
     free(head);
   }
-}
-
-// Conveniece helper for creating new queue elements and 
-// giving them a process
-queue* createQueueElement(process *proc) {
-    queue *new = malloc(sizeof(queue));
-    new->next = NULL;
-    new->proc = proc;
-    return new;
 }

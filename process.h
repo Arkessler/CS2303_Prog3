@@ -14,6 +14,35 @@ typedef struct PROCESS {
   int remainTime;
 } process;
 
+class process{
+ public:
+  process();
+  process(int, int, int);
+  int procLessThan();
+  float getDifference(float);
+  process *cloneProc(process *);
+  ~process();
+
+  int get_pid();
+  int get_aTime();
+  int get_cpuTime();
+  int get_waitTime();
+  int get_remainTime();
+
+  void set_pid(int);
+  void set_aTime(int);
+  void set_cpuTime(int);
+  void set_waitTime(int);
+  void set_remainTime(int);
+
+ private:
+  int pid;
+  int aTime;
+  int cpuTime;
+  int waitTime;
+  int remainTime;
+};
+
 // Mallocs space for a new process
 process* createProc(int pid, int aTime, int cpuTime);
 

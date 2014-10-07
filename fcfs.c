@@ -8,17 +8,16 @@ void checkTimings(fcfs *toRun, process *proc);
 
 // Initializes an FCFS scheduling simulator with the given
 // list of processes to run.
-fcfs* initFCFS(queue *schedQueue) {
-  fcfs* new = malloc(sizeof(fcfs));
-  new->curTime = 0;
-  new->schedQueue = schedQueue;
-  new->finishedProcesses = NULL;
-  return new;
+fcfs::fcfs(queue *newSchedQueue){
+  set_curTime(0);
+  set_schedQueue(newSchedQueue);
+  set_finishedProcesses(NULL);
 }
+
 
 // Runs a FCFS Simulation until completion, printing output
 // to the console
-void runFCFS(fcfs *toRun) {
+void fcfs::runFCFS() {
   // Will control whether to continue the simulation
   int running = 1;
   // The file for simulation output
@@ -29,15 +28,16 @@ void runFCFS(fcfs *toRun) {
 
   while (running) {
     // See if the next process is null. If so, set running to 0 and break
-    if (!toRun->schedQueue) {
+    if (!getSchedQueue()) {
       running = 0;
       break;
     }
 
     // Pop the next process off of the scheduling queue 
     process *nextProc;
-    toRun->schedQueue = pop(toRun->schedQueue, &nextProc);
+    setSchedQueue(pop(toRun->schedQueue, &nextProc));
 
+    ///////From here gonna update
     DEBUG_PRINT("FCFS: Process %d started", nextProc->pid);
       
     // Check the timings so that the simulation time and wait times are correct
@@ -90,4 +90,29 @@ void destoryFCFS(fcfs *toDestroy) {
 void checkTimings(fcfs *toRun, process *proc) {
   if (toRun->curTime < proc->aTime) toRun->curTime = proc->aTime;
   else proc->waitTime = toRun->curTime - proc->aTime;
+}
+
+
+int fcfs::get_curTime(){ // converted by Max.
+  return curTime;
+}
+
+void fcfs::set_curTime(int time){
+  curTime = time;
+}
+
+queue *get_schedQueue(){
+  return schedQueue;
+}
+
+void set_schedQueue(queue *newQueue){
+  schedQueue = newQueue;
+}
+
+queue *get_finishedProcesses(){
+  return finishedProcesses;
+}
+
+void set_finishedProcesses(queue *newQueue){
+  finishedProcesses = newQueue;
 }

@@ -3,22 +3,22 @@
 
 #include "queue.h"
 
-typedef struct {
+class fcfs{
+ public:
+  fcfs(queue *);
+  void run_fcfs();
+  int get_curTime();
+  void set_curTime(int);
+  queue *get_schedQueue();
+  void set_schedQueue(queue *);
+  queue *get_finishedProcesses();
+  void set_finishedProcesses();
+  ~fcfs();
+ private:
   int curTime;
   queue *schedQueue;
   queue *finishedProcesses;
-} fcfs;
+}
 
-// Initializes an FCFS scheduling simulator with the given
-// list of processes to run.
-fcfs* initFCFS(queue *schedQueue);
-
-// Runs a FCFS simulation until completion, printing output
-// to the console
-void runFCFS(fcfs *toRun);
-
-// Destroys a given FCFS scheduling simulator, freeing all
-// remaining resources
-void destoryFCFS(fcfs *toDestroy);
 
 #endif
