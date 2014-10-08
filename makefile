@@ -16,11 +16,11 @@ rr.o: rr.h rr.c queue.h process.h util.h
 fcfs.o: fcfs.h fcfs.c queue.h process.h util.h
 	$(CC) $(CFLAGS) fcfs.c
 
-queue.o: queue.c queue.h process.h
-	$(CC) $(CFLAGS) queue.c -lm
+queue.o: queue.cpp queue.h process.h
+	g++ $(CFLAGS) queue.cpp -lm
 
-process.o: process.c process.h
-	$(CC) $(CFLAGS) process.c
+process.o: process.cpp process.h
+	g++ $(CFLAGS) process.cpp
 
 util.o: util.c util.h queue.h
 	$(CC) $(CFLAGS) util.c

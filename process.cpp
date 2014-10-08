@@ -18,18 +18,18 @@ int process::procLessThan(process *old) {
 }
 
 // Gets the difference between this wait time and the average wait time
-float getDifference(float avg) {
-  return waitTime - avg;
+float process::getDifference(float avg) {
+  return get_waitTime() - avg;
 }
 
 // Creates a clone of the given process. This is malloced,
 // be sure to free it later
-process* process::cloneProc(process *proc) {
+process* process::cloneProc() {
   process *newProc = new process();
-  new->pid = proc->pid;
-  new->aTime = proc->aTime;
-  new->cpuTime = proc->cpuTime;
-  new->waitTime = proc->waitTime;
-  new->remainTime = proc->remainTime;
-  return new;
+  newProc->set_pid(get_pid());
+  newProc->set_aTime(get_aTime());
+  newProc->set_cpuTime(get_cpuTime());
+  newProc->set_waitTime(get_waitTime());
+  newProc->set_remainTime(get_remainTime());
+  return newProc;
 }

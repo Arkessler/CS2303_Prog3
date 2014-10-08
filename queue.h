@@ -4,21 +4,42 @@
 
 // A generic member of the queue, which has a reference to
 // the process in the queue and the next element of the queue
-typedef struct QUEUE {
-  struct QUEUE *next;
+
+
+class queueNode{
+
+  friend class queue;
+ public:
+  queueNode(process *);
+  queueNode *get_next();
+  queueNode *enqueue(process *);
+  queueNode *sortedInsert(process *);
+  queueNode *cloneQueue();
+  void set_next(queueNode *);
+  process *get_proc();
+  void set_proc(process *);
+  ~queueNode();
+  
+ private:
+  queueNode *next;
   process *proc;
-} queue;
+};
 
 class queue{
  public:
   queue();
-  queue *pop( process **);
+  queue( queueNode *);
+  queue *cloneQueue();
+  queueNode *pop( process **);
   void peak(process **);
-  queue* enqueue(process *);
-  queue* sortedInsert(process *);
+  queueNode* enqueue(process *);
+  queueNode* sortedInsert(process *);
   void processEX(float *, float *);
-  int get_min();
-  int get_max();
+  int getQueueMin();
+  int getQueueMax();
+  float getQueueAverage();
+  float getQueueVariance(float);
+
   ~queue();
 
   queueNode *get_front();
@@ -27,28 +48,6 @@ class queue{
  private:
   queueNode *front;
 };
-
-typedef queueNode *queuePtr;
-
-class queueNode{
-
-  friend queue;
- public:
-  queueNode(process *);
-  queue *get_next();
-  queue *enqueue(process *);
-  queue *sortedInsert(process *);
-  queue *cloneQueue();
-  void set_next(queue *);
-  process *get_proc();
-  void set_proc(process *);
-  ~queueNode();
-  
- private:
-  queue *next;
-  process *proc;
-};
-
 
 // Pops the next element off of the queue
 // This returns a pointer to the next head element,

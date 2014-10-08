@@ -2,16 +2,18 @@
 #include <math.h>
 #include "queue.h"
 #include "util.h"
+#include "process.h"
 // Pops the next element off of the queue
 // This returns a pointer to the next head element,
 // and stores a pointer to the process in the given
 // out location. This frees the given queue element,
 // so do not attempt to use it again. To just get the
 // process element, use the peak method
-queue* pop(queue *head, process **out) {
-  queue* next = head->next;
-  peak(head, out);
-  free(head);
+queueNode* queue::pop(process **out) {
+  queueNode* next = get_front()->get_next();
+  peak(out);
+  set_front(next);
+  delete get_front();
   return next;
 }
 
@@ -22,23 +24,23 @@ void queue::peak(process **out) {
 }
 
 // Enqueues an element in a given list, mallocing a new
-// queue structure for the element. If null is passed 
+// queueNode structure for the element. If null is passed 
 // in for head, a new queue will be created
-queue* queue::enqueue(process *proc) {
+queueNode* queue::enqueue(process *proc) {
   if (get_front() == NULL) {
     return new queueNode(proc);
   } else {
-    (get_front()->get_next()) = get_front()->get_next()->enqueue(proc);
-    return get_front();
+    get_front()->set_next(get_front()->get_next()->enqueue(proc));
+     return get_front();
   }
 }
 
-queue* queueNode::enqueue(process *proc){
-  if(head == NULL){
+queueNode* queueNode::enqueue(process *proc){
+  if(!this){
     return new queueNode(proc);
   }
   else{
-    head->get_next() = head->get_next()->enqueue(proc);
+    set_next(get_next()->enqueue(proc));
     return this;
   }
 }
@@ -46,31 +48,32 @@ queue* queueNode::enqueue(process *proc){
 
 // Inserts the given proces into the queue, sorted by
 // cpu time. Returns a pointer to the new head of the queue
-queue* queue::sortedInsert(process *proc){
+queueNode* queue::sortedInsert(process *proc){
   if (get_front()==NULL){
-    return new queue(proc);
+    return new queueNode(proc);
   }
-  else if(procLessThan(proc, get_front()->get_proc())){
-    queue *newQ = new queue(proc);
+  else if(proc->procLessThan(get_front()->get_proc())){
+    queueNode *newQ = new queueNode(proc);
     return newQ;
   }
   else{
-    get_front()->get_next()->set_next(get_front()->get_next()->sorted_insert(proc));
+    get_front()->set_next(get_front()->get_next()->sortedInsert(proc));
     return get_front();
   }
 }
 
-queue* queueNode::sortedInsert(process *proc) {
+queueNode* queueNode::sortedInsert(process *proc) {
   if (this == NULL) {
     // Empty case, return a new element
-    return new queue(proc);
-  } else if (procLessThan(proc, get_proc())) {
-    queue *newQ = createQueueElement(proc);
+    queueNode *newQ = new queueNode(proc);
+    return newQ;
+  } else if (proc->procLessThan(get_proc())) {
+    queueNode *newQ = new queueNode(proc);
     newQ->set_next(this);
     return newQ;
   } else {
     // New process arrives after, insert after
-    head->set_next(head->get_next()->sortedInsert(proc);
+    set_next(get_next()->sortedInsert(proc));
     return this;
   }
 }
@@ -99,7 +102,7 @@ float queue::getQueueVariance(float avg) {
 
   // Loop until we reach the tail of the list
   for (cur = get_front(); cur; cur = cur->get_next()) {
-    float diff = getDifference(get_front()->get_proc(), avg);
+    float diff = get_front()->get_proc()->getDifference(avg);
     total += pow(diff, 2);
     count++;
   }
@@ -165,23 +168,23 @@ int queue::getQueueMax() {
 // These are malloced, be sure to free them later
 queue* queue::cloneQueue() {
   if (get_front()) {
-    queue* newQ = new queue(cloneProc(get_front()->get_proc()));
-    newQ->set_next(get_front()->get_next()->cloneQueue());
+    queue* newQ = new queue(new queueNode(get_front()->get_proc()->cloneProc()));
+    newQ->get_front()->set_next(get_front()->get_next()->cloneQueue());
     return newQ;
   } else {
     return NULL;
   }
 }
 
- queue* queueNode::cloneQueue(){
+ queueNode* queueNode::cloneQueue(){
    if(this){
-     queue *newQ = new queue(cloneProc(get_proc()));
+     queueNode *newQ = new queueNode(get_proc()->cloneProc());
      newQ->set_next(get_next()->cloneQueue());
      return newQ;
+   }
      else{
        return NULL;
      }
-   }
  }
 
 // Frees the entire queue, and the process elements contained within
@@ -205,8 +208,8 @@ queue::~queue() {
 // Conveniece helper for creating new queue elements and 
 // giving them a process
  queueNode::queueNode(process *proc) {
-  new->next = NULL;
-  new->proc = proc;
+  next = NULL;
+  proc = proc;
 }
 
  queue::queue(queueNode *newQ){
