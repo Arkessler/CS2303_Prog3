@@ -18,7 +18,7 @@ class process{
  public:
   process();
   process(int, int, int);
-  int procLessThan();
+  int procLessThan(process *);
   float getDifference(float);
   process *cloneProc(process *);
   ~process();

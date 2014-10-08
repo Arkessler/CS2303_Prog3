@@ -1,22 +1,21 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include <iostream>
+using namespace std;
 #include "util.h"
 
 // Processes all of the stats for a given queue, and prints
 // them to a given file
-void processesStats(FILE *file, queue *stats) {
+void processesStats(queue *stats) {
   float avg, var;
   
   // Calculate the average and variance
   processEX(stats, &avg, &var);
   
   // Print the average and variance
-  fprintf(file, "The mean response time for all processes was %f ms\n", avg * 100);
-  fprintf(file, "The response time variance for all processes was %f\n", var * 100);
+  cout << "The mean response time for all processes was "<<  avg * 100 << " ms\n";
+  cout << "The response time variance for all processes was " << var * 100 << " ms\n";
 
   // Print the max and min wait times
-  fprintf(file, "The shortest wait time was %d ms\n", getQueueMin(stats) * 100);
-  fprintf(file, "The longest wait time was %d ms\n", getQueueMax(stats) * 100);
+  cout << "The shortest wait time was "<< getQueueMin(stats) *100 << " ms\n";
+  cout << "The longest wait time was " << getQueueMax(stats) * 100 << " ms\n";
   
-  fflush(file);
 }

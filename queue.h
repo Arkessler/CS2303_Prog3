@@ -1,6 +1,5 @@
 #ifndef QUEUE_H_
 #define QUEUE_H_
-
 #include "process.h"
 
 // A generic member of the queue, which has a reference to
@@ -15,12 +14,11 @@ class queue{
   queue();
   queue *pop( process **);
   void peak(process **);
-  queue* enqueue(queue, process);
-  queue* sortedInsert(queue *, process *);
+  queue* enqueue(process *);
+  queue* sortedInsert(process *);
   void processEX(float *, float *);
   int get_min();
   int get_max();
-  queue *cloneQueue();
   ~queue();
 
   queueNode *get_front();
@@ -38,6 +36,9 @@ class queueNode{
  public:
   queueNode(process *);
   queue *get_next();
+  queue *enqueue(process *);
+  queue *sortedInsert(process *);
+  queue *cloneQueue();
   void set_next(queue *);
   process *get_proc();
   void set_proc(process *);
