@@ -33,3 +33,4 @@ process* process::cloneProc() {
   newProc->set_remainTime(get_remainTime());
   return newProc;
 }
+

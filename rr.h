@@ -2,25 +2,30 @@
 #define RR_H_
 
 #include "queue.h"
+class rr{
+ public:
+  rr(queue *, int);
+  void runRR();
+  int get_curTime();
+  int get_slice();
+  queue *get_schedQueue();
+  queue *get_finishedProcesses();
+  queue *get_runningQueue();
+  void processArrive();
+  ~rr();
 
-typedef struct {
+  rr *set_curTime(int);
+  rr *set_slice(int);
+  rr *set_runningQueue(queue *);
+  rr *set_schedQueue(queue *);
+  rr *set_finishedProcesses(queue *);
+
+ private:
   int curTime;
   int slice;
   queue *schedQueue;
   queue *runningQueue;
   queue *finishedProcesses;
-} rr;
-
-// Initializes a RR scheduling simulator with the given
-// list of processes to run
-rr* initRR(queue *schedQueue, int slice);
-
-// Runs a RR simulation until completion, printing output
-// to the console
-void runRR(rr *toRun);
-
-// Destroys a given RR scheduling simulator, freeing all
-// remaining resources
-void destroyRR(rr *toDestroy);
+};
 
 #endif

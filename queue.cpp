@@ -3,18 +3,20 @@
 #include "queue.h"
 #include "util.h"
 #include "process.h"
+
 // Pops the next element off of the queue
 // This returns a pointer to the next head element,
 // and stores a pointer to the process in the given
 // out location. This frees the given queue element,
 // so do not attempt to use it again. To just get the
 // process element, use the peak method
-queueNode* queue::pop(process **out) {
+queue* queue::pop(process **out) {
   queueNode* next = get_front()->get_next();
   peak(out);
   set_front(next);
   delete get_front();
-  return next;
+  queue *nextQ = new queue(next);
+  return nextQ;
 }
 
 // Peaks at the next element of the queue, and stores
@@ -26,12 +28,13 @@ void queue::peak(process **out) {
 // Enqueues an element in a given list, mallocing a new
 // queueNode structure for the element. If null is passed 
 // in for head, a new queue will be created
-queueNode* queue::enqueue(process *proc) {
+queue* queue::enqueue(process *proc) {
   if (get_front() == NULL) {
-    return new queueNode(proc);
+    queueNode *newQ = new queueNode(proc);
+    return new queue(newQ);
   } else {
     get_front()->set_next(get_front()->get_next()->enqueue(proc));
-     return get_front();
+    return new queue(get_front());
   }
 }
 
@@ -48,17 +51,18 @@ queueNode* queueNode::enqueue(process *proc){
 
 // Inserts the given proces into the queue, sorted by
 // cpu time. Returns a pointer to the new head of the queue
-queueNode* queue::sortedInsert(process *proc){
+queue* queue::sortedInsert(process *proc){
   if (get_front()==NULL){
-    return new queueNode(proc);
+    queueNode *newQ = new queueNode(proc);
+    return new queue(newQ);
   }
   else if(proc->procLessThan(get_front()->get_proc())){
     queueNode *newQ = new queueNode(proc);
-    return newQ;
+    return new queue(newQ);
   }
   else{
     get_front()->set_next(get_front()->get_next()->sortedInsert(proc));
-    return get_front();
+    return new queue(get_front());
   }
 }
 
@@ -201,7 +205,6 @@ queue::~queue() {
      delete get_next();
      if(get_proc())
        delete get_proc();
-     delete this;
    }
 }
 
@@ -215,3 +218,4 @@ queue::~queue() {
  queue::queue(queueNode *newQ){
    front = newQ;
 }
+
