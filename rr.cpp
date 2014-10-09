@@ -21,7 +21,7 @@ rr::rr(queue *schedQueueN, int sliceN) {
   curTime = 0;
   schedQueue = schedQueueN;
   runningQueue = new queue();
-  finishedProcesses = NULL;
+  finishedProcesses = new queue();
   slice = sliceN;
 }
 
@@ -40,15 +40,15 @@ void rr::runRR(){
     // Enqueue new processes
     processArrive();
 
-    if(DEBUG1) cout<<"Processes Enqueued"<<endl;
+    if(DEBUG1) cout<<"Processes Enqueued"<<get_runningQueue()<<endl;
 
 
     // If there are tasks on the queue, run them for the slice
-    if (get_runningQueue()) {
+    if (get_runningQueue()->get_front()) {
       // Get the next process from the queue
       process *next = new process();
       process **nextPtr = &next;
-      if(DEBUG1) cout<<"before set running queue"<< endl;
+      if(DEBUG1) cout<<"before set running queue"<<endl<<get_runningQueue()->get_front()<<endl;
 
       set_runningQueue(get_runningQueue()->pop(nextPtr));
       if(DEBUG1) cout<< (*nextPtr)->get_pid()<<endl;
@@ -79,6 +79,8 @@ void rr::runRR(){
 	set_curTime( get_curTime() +  next->get_remainTime());
 	next->set_remainTime(0);
 	next->set_waitTime(get_curTime() - (next->get_aTime() + next->get_cpuTime()));
+
+	if(DEBUG1) cout<< next->get_pid() <<endl;
 	set_finishedProcesses(get_finishedProcesses()->enqueue(next));
 	cout << "Process " <<next->get_pid() <<" finished at " << get_curTime() * 100  << " ms\n";
 	continue;
@@ -87,7 +89,7 @@ void rr::runRR(){
       DEBUG_PRINT("No process in the queue");
 
       // If there are processes left, advance to that process's arrival time. Otherwise, we're done
-      if (get_schedQueue()) {
+      if (get_schedQueue()->get_front()) {
 	process *next;
 	get_schedQueue()->peak(&next);
 	set_curTime(next->get_aTime());

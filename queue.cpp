@@ -19,8 +19,11 @@ using std::flush;
 // process element, use the peak method
 
 queue* queue::pop(process **out) {
+  if(DEBUG1) cout<< "in pop" <<endl<<get_front()<<endl <<flush;
   queueNode* next = get_front()->get_next();
+  if(DEBUG1) cout<< "before peak" <<endl<<flush;
   peak(out);
+  if(DEBUG1) cout << "Peaked in pop"<<endl<<flush;
   delete get_front();
   //set_front(next);
   if(DEBUG1) cout <<"after delete" <<endl;

@@ -5,7 +5,7 @@
 #include <iostream>
 
 #define DEBUG 0
-#define DEBUG1 1
+#define DEBUG1 0
 
 #define DEBUG_PRINT(...)
 
