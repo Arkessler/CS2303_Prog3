@@ -9,7 +9,7 @@
 class process{
  public:
   process();
-  process(int, int, int);
+  process(int, int, int, int);
   int procLessThan(process *);
   float getDifference(float);
   process *cloneProc();
@@ -20,18 +20,21 @@ class process{
   int get_cpuTime();
   int get_waitTime();
   int get_remainTime();
+  int get_ioTime();
 
   void set_pid(int);
   void set_aTime(int);
   void set_cpuTime(int);
   void set_waitTime(int);
   void set_remainTime(int);
+  void set_ioTime(int);
 
  private:
   int pid;
   int aTime;
   int cpuTime;
   int waitTime;
+  int ioTime;
   int remainTime;
 };
 

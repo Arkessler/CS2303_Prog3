@@ -10,18 +10,19 @@ using namespace std;
 #include "process.h"
 #include "queue.h"
 #include "util.h"
+#define DEBUG_PRINT
 
 // Forward Declarations
 void processArrive(rr *toRun);
 
 // Initializes a RR scheduling simulator with the given
 // list of processes to run
-rr::rr(queue *schedQueueN, int slice) {
+rr::rr(queue *schedQueueN, int sliceN) {
   curTime = 0;
   schedQueue = schedQueueN;
-  runningQueue = NULL;
+  runningQueue = new queue();
   finishedProcesses = NULL;
-  slice = slice;
+  slice = sliceN;
 }
 
 // Runs a RR simulation until completion, printing output
@@ -34,31 +35,46 @@ void rr::runRR(){
 
   while (running) {
     
-    DEBUG_PRINT("Enqueueing new processes");
+    //if(DEBUG1) cout<< get_schedQueue()<< endl;
 
     // Enqueue new processes
     processArrive();
 
-    DEBUG_PRINT("Processes Enqueued");
+    if(DEBUG1) cout<<"Processes Enqueued"<<endl;
+
 
     // If there are tasks on the queue, run them for the slice
     if (get_runningQueue()) {
       // Get the next process from the queue
-      process *next = NULL;
-      set_runningQueue(get_runningQueue()->pop(&next));
+      process *next = new process();
+      process **nextPtr = &next;
+      if(DEBUG1) cout<<"before set running queue"<< endl;
+
+      set_runningQueue(get_runningQueue()->pop(nextPtr));
+      if(DEBUG1) cout<< (*nextPtr)->get_pid()<<endl;
+      next = *nextPtr;
+
+
+      if(DEBUG1) cout<<"after set running queue" <<endl;
 
       // Increment the clock and decrement the remaining time. If time is > 0, then requeue the process
       // If not, then remove the process, add it to the finished queue, and increment its waitTime
+      
+      if(DEBUG1) cout << next <<endl;
+
       if ((next->get_remainTime() - get_slice()) > 0) {
-	DEBUG_PRINT("Process %d is not complete", next->get_pid());
+	if(DEBUG1) cout<<"Process is not complete " << next->get_pid() << endl;
 
 	next->set_remainTime( next->get_remainTime() - get_slice());
+	if(DEBUG1) cout<<"remain time after" << get_slice() << "ms update " << next->get_remainTime();
+
 	set_curTime( get_curTime() + get_slice());
 	set_runningQueue(get_runningQueue()->enqueue(next));
 	cout << "Process " << next->get_pid() << " has run for " << get_slice() * 100  << " ms, "<< next->get_remainTime() * 100  << " ms remaining\n";
 	continue;
       } else {
-	DEBUG_PRINT("Process %d completed", next->get_pid());
+
+	if(DEBUG1) cout<< "Process completed "<<  next->get_pid() <<endl;
 
 	set_curTime( get_curTime() +  next->get_remainTime());
 	next->set_remainTime(0);
@@ -106,14 +122,17 @@ rr::~rr() {
 // Removes all arriving processes for the current time
 // and adds them to the scheduling queue
 void rr::processArrive() {
+
   int moreProcesses = get_schedQueue() ? 1 : 0;
   while (moreProcesses) {
     process *proc = NULL;
     get_schedQueue()->peak(&proc);
     if (proc && get_curTime() >= proc->get_aTime()) {
-      //DEBUG_PRINT("Process %d has arrived at the scheduling queue", proc->pid);
+      if(DEBUG1) cout<< "Process has arrived at the scheduling queue"<<endl;
 
       set_schedQueue(get_schedQueue()->pop(&proc));
+
+      //if(DEBUG1) cout<< get_schedQueue()->get_front() <<endl;
       set_runningQueue(get_runningQueue()->enqueue(proc));
     } else {
       moreProcesses = 0;

@@ -47,4 +47,6 @@ class queue{
  private:
   queueNode *front;
 };//
+
+queueNode *sortedInsert(queueNode *, process *);
 #endif

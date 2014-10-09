@@ -8,6 +8,7 @@ using std::endl;
 #include "fcfs.h"
 #include "rr.h"
 #include "util.h"
+#define DEBUG_PRINT
 
 // Forward declaration of readInput
 queue* readInput(int);
@@ -49,40 +50,59 @@ int main(int argc, char **argv) {
     DEBUG_PRINT("Slice was %d", slice);
   }
 
-  DEBUG_PRINT("Arguments processes, starting input read");
+  if (DEBUG) cout<<"correct inputs"<<endl;
 
   // Read in the input, and set up the schedule list
   mainQueue = readInput(numProc);  
-  DEBUG_PRINT("Finished Read");
+ 
+  if(DEBUG1) cout<< "Finished Read"<<endl;
 
   // Clone the main list for the three schedule queues, and
   // dispose of it when we're done
   DEBUG_PRINT("Starting FCFS Clone");
+  
+  if(DEBUG1) cout<< "starting FCFS cloning" <<endl;
+  fcfsQueue = new queue();
   fcfsQueue = mainQueue->cloneQueue();
+  
+  if(DEBUG1) cout<< "starting RR cloning" <<endl;
+
   DEBUG_PRINT("Starting RR Clone");
+  
+  rrQueue = new queue();
   rrQueue = mainQueue->cloneQueue();
   DEBUG_PRINT("Starting Free");
+
+  if(DEBUG1) cout<< "deleting main queue" <<endl;
   delete mainQueue;
   DEBUG_PRINT("Finished clone and free\n\n");
 
+
+  /*  THIS ISN'T NECESSARY FOR LAB
+  if(DEBUG1) cout<< "starting FCFS sim" <<endl;
   // Do the FCFS simulation
   DEBUG_PRINT("Starting FCFS initialization");
   fcfs *fcfsSim = new fcfs(fcfsQueue);
   DEBUG_PRINT("Initialized FCFS");
   fcfsSim->run_fcfs();
+  
+  if(DEBUG1) cout<<"ending FCFS sim" <<endl;
   DEBUG_PRINT("FCFS run complete");
   delete fcfsSim;
+  if(DEBUG1) cout<<"deleted FCFS sim"<<endl;
   DEBUG_PRINT("FCFS destroyed\n\n");
+  */
+
 
   // Do the RR Simulation if slice is valid
   if (slice > 0) {
-    DEBUG_PRINT("Starting RR initialization");
+    if(DEBUG1)cout<< "Starting RR initialization"<<endl;
     rr *rrSim = new rr(rrQueue, slice);
-    DEBUG_PRINT("Initialized RR");
+    if(DEBUG1)cout<< "Initialized RR"<<endl;
     rrSim->runRR();
-    DEBUG_PRINT("RR run complete");
+    if(DEBUG1)cout<< "RR run complete"<<endl;
     delete rrSim;
-    DEBUG_PRINT("RR destroyed\n\n");
+    if(DEBUG1)cout<<"RR destroyed\n\n"<<endl;
   }
 
   DEBUG_PRINT("SIMULATION COMPLETE!");
@@ -95,7 +115,7 @@ int main(int argc, char **argv) {
 // containing all of the read in lines, in arrival-time order
 queue* readInput(int numProc) {
   int i;
-  queue *head = NULL;
+  queue *head = new queue();
 
   // Loop until all lines have been read 
   for (i = 0; i < numProc; i++) {
@@ -103,11 +123,17 @@ queue* readInput(int numProc) {
     int pid;
     int aTime;
     int cpuTime;
+    int ioTime;
     cin>>pid;
     cin>>aTime;
     cin>>cpuTime;
-    process *proc = new process(pid, aTime, cpuTime);
-    head ->sortedInsert(proc);
+    cin>> ioTime;
+
+    if(DEBUG) cout<<"read in correctly"<< endl;
+    process *proc = new process(pid, aTime, cpuTime, ioTime);
+    if(DEBUG) cout<<"assigned correctly, :"<<proc->get_pid()<<" "<< proc->get_aTime() << " " << proc->get_cpuTime() << endl;
+    head->set_front(sortedInsert(head->get_front(), proc));
+    if(DEBUG) cout<<"passed insert correctly "<< head->get_front()->get_proc() <<endl;//->get_pid() <<endl;
   }
 
   return head;

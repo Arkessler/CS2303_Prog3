@@ -4,12 +4,10 @@
 #include "queue.h"
 #include <iostream>
 
-#ifdef DEBUG
-#define DEBUG_PRINT(...) printf(__VA_ARGS__); printf("\n");
-#else
+#define DEBUG 0
+#define DEBUG1 1
 
-#define DEBUG_PRINT(...) // Expand to nothing!
-#endif
+#define DEBUG_PRINT(...)
 
 // Processes all of the stats for a given queue, and prints
 // them to a given file

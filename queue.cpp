@@ -1,12 +1,16 @@
 #ifndef QUEUE_CPP_
 #define QUEUE_CPP_
 
+#include <iostream>
+using std::endl;
+using std::cout;
+using std::flush;
 #include <stdlib.h>
 #include <math.h>
 #include "queue.h"
 #include "util.h"
 #include "process.h"
-
+#define DEBUG_DEL 1
 // Pops the next element off of the queue
 // This returns a pointer to the next head element,
 // and stores a pointer to the process in the given
@@ -17,8 +21,9 @@
 queue* queue::pop(process **out) {
   queueNode* next = get_front()->get_next();
   peak(out);
-  set_front(next);
   delete get_front();
+  //set_front(next);
+  if(DEBUG1) cout <<"after delete" <<endl;
   queue *nextQ = new queue(next);
   return nextQ;
 }
@@ -33,10 +38,17 @@ void queue::peak(process **out) {
 // queueNode structure for the element. If null is passed 
 // in for head, a new queue will be created
 queue* queue::enqueue(process *proc) {
+  if(DEBUG1) cout << "in enqueue"<< endl;
+
+  //if(DEBUG1) cout <<"can use getfront()"<<endl<<(get_front())<<endl<<flush;
+
   if (get_front() == NULL) {
+    if(DEBUG1) cout <<"no front" << endl<<flush;
+
     queueNode *newQ = new queueNode(proc);
     return new queue(newQ);
   } else {
+    if(DEBUG1) cout<< "has front"<<endl<<flush;
     get_front()->set_next(get_front()->get_next()->enqueue(proc));
     return new queue(get_front());
   }
@@ -56,21 +68,63 @@ queueNode* queueNode::enqueue(process *proc){
 // Inserts the given proces into the queue, sorted by
 // cpu time. Returns a pointer to the new head of the queue
 queue* queue::sortedInsert(process *proc){
+  if(DEBUG) {
+    cout<< "in sorted Insert!"<< endl << flush;
+  }
+  if(DEBUG) cout<< "passed get_front assignment : "<<(get_front() == NULL) << endl <<flush;
+
   if (get_front()==NULL){
+    if(DEBUG) cout<<"front is Null"<<endl<<flush;
     queueNode *newQ = new queueNode(proc);
     return new queue(newQ);
   }
   else if(proc->procLessThan(get_front()->get_proc())){
+    if(DEBUG) {
+      cout<<"new process less than front"<<endl << flush;
+      fflush(stdout);
+    }
     queueNode *newQ = new queueNode(proc);
     return new queue(newQ);
   }
   else{
+    if(DEBUG) {
+      cout <<"new process is greater than front"<<endl <<flush;
+    }
     get_front()->set_next(get_front()->get_next()->sortedInsert(proc));
     return new queue(get_front());
   }
 }
 
+
+
+queueNode* sortedInsert(queueNode *head, process *proc_n){
+
+  if(head) head->get_proc();
+  if(DEBUG) cout<<"in new sort, head is null "<<(head == NULL)<<endl;//<<"process aTime is "<< head->get_proc()->get_aTime() <<endl<<flush; //   " proc is less than " <<(proc->procLessThan(head->get_proc())) <<endl<<flush;
+  if(head == NULL){
+    if(DEBUG) cout<<"no front" <<endl<<flush;
+    queueNode *newQ = new queueNode(proc_n);
+    if(DEBUG) cout << newQ->get_proc() <<endl; 
+    return newQ;
+  }
+  else if(proc_n->procLessThan(head->get_proc())){
+    if(DEBUG) cout<<"process is less than the front process" <<endl<<flush;
+    queueNode *newQ = new queueNode(proc_n);
+    newQ->set_next(head);
+    return newQ;
+  }
+  else{
+    if(DEBUG) cout<<"process is greater than front process"<<endl<<flush;
+    head->set_next(sortedInsert(head->get_next(), proc_n));
+    return head;
+  }
+
+}
+
+
+
 queueNode* queueNode::sortedInsert(process *proc) {
+  if(DEBUG) cout << "is this (ptr) null?  "<< (this == NULL) <<endl <<flush;
   if (this == NULL) {
     // Empty case, return a new element
     queueNode *newQ = new queueNode(proc);
@@ -176,6 +230,7 @@ int queue::getQueueMax() {
 // These are malloced, be sure to free them later
 queue* queue::cloneQueue() {
   if (get_front()) {
+    if(DEBUG1) cout << "run clone" <<endl;
     queue* newQ = new queue(new queueNode(get_front()->get_proc()->cloneProc()));
     newQ->get_front()->set_next(get_front()->get_next()->cloneQueue());
     return newQ;
@@ -186,7 +241,9 @@ queue* queue::cloneQueue() {
 
  queueNode* queueNode::cloneQueue(){
    if(this){
+
      queueNode *newQ = new queueNode(get_proc()->cloneProc());
+     if(DEBUG1) cout <<newQ->get_proc()->get_pid() <<endl;
      newQ->set_next(get_next()->cloneQueue());
      return newQ;
    }
@@ -197,26 +254,28 @@ queue* queue::cloneQueue() {
 
 // Frees the entire queue, and the process elements contained within
 queue::~queue() {
+  if(DEBUG_DEL) cout<< " in delete for queue" <<endl;
   if (get_front()) {
     delete get_front()->get_next();
-    if (get_front()->get_proc()) delete get_front()->get_proc();
-    delete get_front();
+    if(DEBUG_DEL) cout<<" deleted next" <<endl;
   }
 }
 
  queueNode::~queueNode(){
-   if(this){
-     delete get_next();
-     if(get_proc())
+   if(DEBUG_DEL) cout << "in delete for queueNode"<<endl;
+   // if(this){
+   if(0){
+   if(get_proc())
        delete get_proc();
    }
-}
+   //if(DEBUG_DEL) cout<< " deleted proc"<<endl;
+ }
 
 // Conveniece helper for creating new queue elements and 
 // giving them a process
  queueNode::queueNode(process *proc) {
-  next = NULL;
-  proc = proc;
+   set_next(NULL);
+  set_proc(proc);
 }
 
  queue::queue(queueNode *newQ){
@@ -241,13 +300,18 @@ void queueNode::set_proc(process *newP){
 }
 
 queueNode *queue::get_front(){
-  return front;
+  if(front == NULL)
+    return NULL;
+  else
+    return front;
 }
 
 void queue::set_front(queueNode *newQ){
   front = newQ;
 }
 
-
+queue::queue(){
+  front = NULL;
+}
 
 #endif

@@ -37,6 +37,8 @@ void fcfs::run_fcfs() {
     process *nextProc;
     set_schedQueue(get_schedQueue()->pop(&nextProc));
   
+    if(DEBUG1) cout<< "nextProc id: " << nextProc->get_pid()<<endl;
+
     ///////From here gonna update
     DEBUG_PRINT("FCFS: Process %d started", nextProc->get_pid());
       
@@ -48,7 +50,11 @@ void fcfs::run_fcfs() {
   
     // Increment the clock, then add the process to the finished queue
     set_curTime(get_curTime() + nextProc->get_cpuTime());
+    if(DEBUG1) cout<< "set curtime" <<endl;
+
     set_finishedProcesses(get_finishedProcesses()->enqueue(nextProc));
+
+    if(DEBUG1)cout<<"set finished processes" <<endl;
   
     // Print the final leaving time
     cout << "Process " << nextProc->get_pid() << " finished at "<< get_curTime() * 100 <<" ms.\n";

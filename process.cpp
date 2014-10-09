@@ -4,13 +4,19 @@
 //#include <stdlib.h>
 //#include <stdio.h>
 #include "process.h"
+#include "util.h"
+#include <iostream>
+using std::cout;
+using std::endl;
+using std::flush;
 
 // Mallocs space for a new process
-process::process(int new_pid, int new_aTime, int new_cpuTime) {;
+process::process(int new_pid, int new_aTime, int new_cpuTime, int new_io) {;
   pid = new_pid;
   aTime = new_aTime;
   cpuTime = new_cpuTime;
   waitTime = 0;
+  ioTime = new_io;
   remainTime = new_cpuTime;
 }
 
@@ -25,8 +31,13 @@ process::process(){
 // Compares two processes, returning 0 if the old
 // process comes before the new process, 1 otherwise
 int process::procLessThan(process *old) {
-  return aTime <= old->get_aTime();
+  if(DEBUG) {
+    cout<< "in procCompare, aTime "<< get_aTime() <<endl<<flush;
+    cout<< " old aTime "<<old->get_aTime()<<endl<<flush;
+  }
+  return get_aTime() <= old->get_aTime();
 }
+
 
 // Gets the difference between this wait time and the average wait time
 float process::getDifference(float avg) {
@@ -47,6 +58,14 @@ process* process::cloneProc() {
 
 int process::get_pid(){
   return pid;
+}
+
+int process::get_ioTime(){
+  return ioTime;
+}
+
+void process::set_ioTime(int newTime){
+  ioTime = newTime;
 }
 
 int process::get_aTime(){
@@ -86,10 +105,6 @@ void process::set_remainTime(int newR){
 }
 
 process::~process(){
-  delete &pid;
-  delete &aTime;
-  delete &cpuTime;
-  delete &waitTime;
-  delete &remainTime;
+  if(DEBUG1) cout<< "in delete for process" <<endl;
 }
 #endif
