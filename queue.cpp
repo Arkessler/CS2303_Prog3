@@ -1,3 +1,6 @@
+#ifndef QUEUE_CPP_
+#define QUEUE_CPP_
+
 #include <stdlib.h>
 #include <math.h>
 #include "queue.h"
@@ -10,6 +13,7 @@
 // out location. This frees the given queue element,
 // so do not attempt to use it again. To just get the
 // process element, use the peak method
+
 queue* queue::pop(process **out) {
   queueNode* next = get_front()->get_next();
   peak(out);
@@ -219,3 +223,31 @@ queue::~queue() {
    front = newQ;
 }
 
+
+queueNode *queueNode::get_next(){
+  return next;
+}
+
+void queueNode::set_next(queueNode *newQ){
+  next = newQ;
+}
+
+process *queueNode::get_proc(){
+  return proc;
+}
+
+void queueNode::set_proc(process *newP){
+  proc = newP;
+}
+
+queueNode *queue::get_front(){
+  return front;
+}
+
+void queue::set_front(queueNode *newQ){
+  front = newQ;
+}
+
+
+
+#endif

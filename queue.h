@@ -39,7 +39,6 @@ class queue{
   int getQueueMax();
   float getQueueAverage();
   float getQueueVariance(float);
-
   ~queue();
 
   queueNode *get_front();

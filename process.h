@@ -34,4 +34,5 @@ class process{
   int waitTime;
   int remainTime;
 };
+
 #endif

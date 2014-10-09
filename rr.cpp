@@ -1,3 +1,6 @@
+#ifndef RR_CPP_
+#define RR_CPP_
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
@@ -164,3 +167,4 @@ rr *rr::set_finishedProcesses(queue *newQ){
   return this;
 }
 
+#endif

@@ -1,6 +1,7 @@
 #include <iostream>
 using namespace std;
 #include "util.h"
+#include "queue.h"
 
 // Processes all of the stats for a given queue, and prints
 // them to a given file
