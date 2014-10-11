@@ -78,7 +78,6 @@ int main(int argc, char **argv) {
   DEBUG_PRINT("Finished clone and free\n\n");
 
 
-  /*  THIS ISN'T NECESSARY FOR LAB
   if(DEBUG1) cout<< "starting FCFS sim" <<endl;
   // Do the FCFS simulation
   DEBUG_PRINT("Starting FCFS initialization");
@@ -91,7 +90,7 @@ int main(int argc, char **argv) {
   delete fcfsSim;
   if(DEBUG1) cout<<"deleted FCFS sim"<<endl;
   DEBUG_PRINT("FCFS destroyed\n\n");
-  */
+  
 
 
   // Do the RR Simulation if slice is valid

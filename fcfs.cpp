@@ -14,7 +14,7 @@ using namespace std;
 fcfs::fcfs(queue *newSchedQueue){
   set_curTime(0);
   set_schedQueue(newSchedQueue);
-  set_finishedProcesses(NULL);
+  set_finishedProcesses(new queue());
 }
 
 
@@ -27,11 +27,15 @@ void fcfs::run_fcfs() {
   cout<< "Starting FCFS scheduling simulation\n";
 
   while (running) {
+
+    if(DEBUG1) cout<< "check if still running" <<endl;
     // See if the next process is null. If so, set running to 0 and break
-    if (!get_schedQueue()) {
+    if (!get_schedQueue()->get_front()) {
       running = 0;
+      if(DEBUG1) cout<<"no longer running" <<endl;
       break;
     }
+    if(DEBUG1)cout<<"still running" <<endl;
   
     // Pop the next process off of the scheduling queue 
     process *nextProc;
@@ -40,7 +44,7 @@ void fcfs::run_fcfs() {
     if(DEBUG1) cout<< "nextProc id: " << nextProc->get_pid()<<endl;
 
     ///////From here gonna update
-    DEBUG_PRINT("FCFS: Process %d started", nextProc->get_pid());
+    if(DEBUG1) cout<< "FCFS: Process "<< nextProc->get_pid()<< " started";
       
     // Check the timings so that the simulation time and wait times are correct
     checkTimings(nextProc);
@@ -77,8 +81,6 @@ fcfs::~fcfs() {
   // Destory any remaining schedule queue elements
   delete schedQueue;
   delete finishedProcesses;
-  // Finally, free the fcfs struct itself
-  free(this);
 }
 
 // Checks the timings of the incoming process.

@@ -10,7 +10,6 @@ using namespace std;
 #include "process.h"
 #include "queue.h"
 #include "util.h"
-#define DEBUG_PRINT
 
 // Forward Declarations
 void processArrive(rr *toRun);
